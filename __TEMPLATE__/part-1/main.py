@@ -7,6 +7,9 @@ def main():
     for line in lines:
         print(line)
 
+    return True
+
 
 if __name__ == '__main__':
-    main()
+    result = main()
+    print(result)
