@@ -186,3 +186,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# do not track input data as per AOC rules
+data
