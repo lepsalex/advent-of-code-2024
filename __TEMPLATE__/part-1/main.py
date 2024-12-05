@@ -7,8 +7,10 @@ def main():
     for line in lines:
         print(line)
 
-    return True
+    return solve()
 
+def solve():
+    return 1
 
 if __name__ == '__main__':
     result = main()

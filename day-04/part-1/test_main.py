@@ -1,10 +1,12 @@
 from unittest import TestCase
+
+from lib.input import clean_input
 from main import search, get_search_vectors
 
 
 class Test(TestCase):
     def test_search_simple(self):
-        input_str = self.clean_input('''
+        input_str = clean_input('''
                 XMAS
                 XMAS
                 XMAS
@@ -17,7 +19,7 @@ class Test(TestCase):
         self.assertEqual(expected, actual)
 
     def test_search_provided_example(self):
-        input_str = self.clean_input('''
+        input_str = clean_input('''
         MMMSXXMASM
         MSAMXMSMSA
         AMXSXMAAMM
@@ -48,7 +50,3 @@ class Test(TestCase):
         ]
 
         self.assertSetEqual(set(expected), set(actual))
-
-    @staticmethod
-    def clean_input(input_str: str) -> list[str]:
-        return [line.strip() for line in input_str.strip().split()]
