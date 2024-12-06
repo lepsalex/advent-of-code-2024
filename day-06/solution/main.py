@@ -1,3 +1,4 @@
+from copy import deepcopy
 from enum import StrEnum
 
 from lib.input import get_input_lines
@@ -20,10 +21,10 @@ GUARD_OFF_GRID = (-1, -1)
 def main():
     lines = get_input_lines(__file__)
 
-    return solve(lines)
+    return solve_part_1(lines), solve_part_2(lines)
 
 
-def solve(lines: list[str]):
+def solve_part_1(lines: list[str]):
     room_map, guard_location, room_size = create_room_map(lines)
 
     # init with the guard's starting location
@@ -38,6 +39,45 @@ def solve(lines: list[str]):
             visited_set.add(guard_location)
 
     return len(visited_set)
+
+
+def solve_part_2(lines: list[str]):
+    # base room
+    base_room_map, base_guard_location, room_size = create_room_map(lines)
+    room_size_x, room_size_y = room_size
+
+    # loop counter
+    loop_count = 0
+
+    for y in range(room_size_y):
+        for x in range(room_size_x):
+            x_y_location = (x, y)
+            room_variant = create_room_map_variant(base_room_map, base_guard_location, x_y_location)
+
+            if room_variant is None:
+                continue
+
+            room_map, guard_location = room_variant
+
+            # for part two we store location and direction in
+            # a set so that we can detect a loop vs just crossing
+            # over a tile the guard had crossed before
+
+            guard = get_tile(room_map, guard_location)
+            visited_set = {(guard_location, guard)}
+
+            # move around the map until we would go off grid
+            while guard_location != GUARD_OFF_GRID:
+                room_map, guard_location = guard_move(room_map, guard_location, room_size)
+                guard = get_tile(room_map, guard_location)
+
+                if (guard_location, guard) in visited_set:
+                    loop_count += 1
+                    break
+
+                visited_set.add((guard_location, guard))
+
+    return loop_count
 
 
 def guard_move(room_map: list[list[TILE]], guard_location: tuple[int, int], room_size: tuple[int, int]) -> (
@@ -58,6 +98,10 @@ def guard_move(room_map: list[list[TILE]], guard_location: tuple[int, int], room
         # check if the next tile is off grid after rotating
         if is_tile_off_grid(room_size, forward_tile):
             return room_map, GUARD_OFF_GRID
+
+        # if the next tile after is still an obstacle, return without moving
+        if is_tile_obstacle(room_map, forward_tile):
+            return room_map, guard_location
 
     # move the guard
     update_tile_at_location(room_map, guard_location, TILE.NORMAL)
@@ -123,15 +167,33 @@ def update_tile_at_location(room_map: list[list[TILE]], x_y_location: tuple[int,
     room_map[y][x] = new_tile
 
 
+def create_room_map_variant(room_map: list[list[TILE]], guard_location: tuple[int, int], x_y_location: tuple[int, int]):
+    # the tile we want to potentially swap into an obstacle
+    tile_at_location = get_tile(room_map, x_y_location)
+
+    # only swap normal tiles
+    if tile_at_location != TILE.NORMAL:
+        return None
+
+    # swap from normal to obstacle
+    room_map_instance = deepcopy(room_map)
+    update_tile_at_location(room_map_instance, x_y_location, TILE.OBSTACLE)
+
+    return (
+        room_map_instance,
+        guard_location,
+    )
+
+
 def create_room_map(lines: list[str]) -> (list[list[TILE]], tuple[int, int], tuple[int, int]):
-    size_x = len(lines[0])
-    size_y = len(lines)
-    size = (size_x, size_y)
+    room_size_x = len(lines[0])
+    room_size_y = len(lines)
+    room_size = (room_size_x, room_size_y)
     guard_location = (0, 0)
     room_map: list[list[str]] = []
 
-    for y in range(size_y):
-        for x in range(size_x):
+    for y in range(room_size_y):
+        for x in range(room_size_x):
             if x == 0:
                 room_map.append([])
 
@@ -145,7 +207,7 @@ def create_room_map(lines: list[str]) -> (list[list[TILE]], tuple[int, int], tup
     return (
         room_map,
         guard_location,
-        size
+        room_size
     )
 
 
@@ -154,5 +216,7 @@ def parse_tile(tile: str) -> TILE:
 
 
 if __name__ == '__main__':
-    result = main()
-    print(result)
+    # Caution, running part 2 takes quite some time ...
+    result_1, result_2 = main()
+    print("Part 1: ", result_1)
+    print("Part 2: ", result_2)
