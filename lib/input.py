@@ -12,4 +12,4 @@ def get_input(file: str) -> str:
         return file.read().strip()
 
 def clean_input(input_str: str) -> list[str]:
-    return [line.strip() for line in input_str.strip().split()]
+    return [line.strip() for line in input_str.strip().split("\n")]
