@@ -16,7 +16,7 @@ class Test(TestCase):
     def test_solve_part_two(self):
         stones = ["125", "17"]
 
-        expected = 55312
+        expected = 65601038650482
         actual = solve_part_two(stones)
 
         self.assertEqual(expected, actual)
