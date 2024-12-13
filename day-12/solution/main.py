@@ -67,10 +67,73 @@ def solve_part_one(lines: list[str]):
 
 
 def solve_part_two(lines: list[str]):
-    return 2
+    added_to_region = set()
+    regions = {}
+    grid_size = len(lines)
+
+    for y, line in enumerate(lines):
+        for x in range(len(line)):
+            if (x, y) in added_to_region:
+                continue
+
+            region = line[x]
+            key = f"{region}-{x}-{y}"
+
+            if key in regions:
+                continue
+
+            regions[key] = {}
+            regions[key]['nodes'] = []
+
+            nodes = [(x, y)] + get_valid_moves((x, y), grid_size)
+
+            while len(nodes) > 0:
+                node = nodes.pop()
+                n_x, n_y = node
+
+                if lines[n_y][n_x] != region:
+                    continue
+
+                if node in added_to_region:
+                    continue
+
+                added_to_region.add(node)
+                regions[key]['nodes'].append(node)
+
+                nodes.extend(get_valid_moves(node, grid_size))
+
+            regions[key]['area'] = len(regions[key]["nodes"])
+            regions[key]["num_sides"] = calculate_sides(regions[key]["nodes"], grid_size)
+
+    return sum(map(lambda region_value: region_value['area'] * region_value['num_sides'], regions.values()))
 
 
-def calculate_perimeter(lines: list[str], pos: (int, int), grid_size: int, region: str):
+def calculate_sides(nodes: list[(int, int)], grid_size: int) -> int:
+    per = []
+
+    for node in nodes:
+        for mx, my in moves:
+            nx, ny = node[0] + mx, node[1] + my
+            if nx not in range(grid_size) or ny not in range(grid_size) or (nx, ny) not in nodes:
+                per.append((node, (nx, ny)))
+
+    per = set(per)
+    per2 = set()
+
+    for p1, p2 in per:
+        keep = True
+        for dx, dy in [(1, 0), (0, 1)]:
+            p1n = (p1[0] + dx, p1[1] + dy)
+            p2n = (p2[0] + dx, p2[1] + dy)
+            if (p1n, p2n) in per:
+                keep = False
+        if keep:
+            per2.add((p1, p2))
+
+    return len(per2)
+
+
+def calculate_perimeter(lines: list[str], pos: (int, int), grid_size: int, region: str) -> int:
     perimeter = 4
     coords_around_pos = get_valid_moves(pos, grid_size)
     for (cx, cy) in coords_around_pos:

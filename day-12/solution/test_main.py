@@ -37,15 +37,30 @@ class Test(TestCase):
         self.assertEqual(expected, actual)
 
 
-    def test_solve_part_two(self):
+    def test_solve_part_two_simple(self):
         lines = clean_input('''
-                0000
-                0000
-                0000
-                0000
+                AAAA
+                BBCD
+                BBCC
+                EEEC
                 ''')
 
-        expected = 2
+        expected = 80
+        actual = solve_part_two(lines)
+
+        self.assertEqual(expected, actual)
+
+    def test_solve_part_two_example(self):
+        lines = clean_input('''
+                AAAAAA
+                AAABBA
+                AAABBA
+                ABBAAA
+                ABBAAA
+                AAAAAA
+                ''')
+
+        expected = 368
         actual = solve_part_two(lines)
 
         self.assertEqual(expected, actual)
