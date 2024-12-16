@@ -47,7 +47,7 @@ class Test(TestCase):
                 Prize: X=18641, Y=10279
                 ''')
 
-        expected = 2
+        expected = 875318608908
         actual = solve_part_two(lines)
 
         self.assertEqual(expected, actual)

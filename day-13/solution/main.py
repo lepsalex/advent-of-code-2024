@@ -12,24 +12,26 @@ def main():
 def solve_part_one(lines: list[str]):
     results = [solve_block(block) for block in get_blocks(lines)]
 
-    return sum([x for x in results if x != float('inf')])
+    return sum([x for x in results if x is not None])
 
 
 def solve_part_two(lines: list[str]):
-    return 2
+    results = [solve_block(block, 10000000000000) for block in get_blocks(lines)]
+
+    return sum([x for x in results if x is not None])
 
 
-def solve_block(block: list[int]):
+def solve_block(block: list[int], p: int = 0):
     ax, ay, bx, by, px, py = block
+    px = px + p
+    py = py + p
+    ca = (px * by - py * bx) / (ax * by - ay * bx)
+    cb = (px - ax * ca) / bx
 
-    min_score = float("inf")
-
-    for a in range(101):
-        for b in range(101):
-            if a * ax + b * bx == px and a * ay + b * by == py:
-                min_score = min(min_score, a * 3 + b * 1)
-
-    return min_score
+    if ca % 1 == cb % 1 == 0:
+        return int(ca * 3 + cb)
+    else:
+        return None
 
 
 def get_blocks(lines: list[str]):
@@ -37,7 +39,7 @@ def get_blocks(lines: list[str]):
 
 
 def parse_block(lines: list[str]):
-    num_regex = re.compile("\d+")
+    num_regex = re.compile("\\d+")
     return [int(x) for x in num_regex.findall(" ".join(lines))]
 
 
