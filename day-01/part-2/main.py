@@ -1,5 +1,4 @@
-import os
-from itertools import groupby, count
+from itertools import groupby
 
 from lib.input import get_input_lines
 
