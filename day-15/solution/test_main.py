@@ -70,3 +70,24 @@ class Test(TestCase):
         actual = solve_part_two(state, commands_str)
 
         self.assertEqual(expected, actual)
+
+    def test_solve_part_two_small(self):
+        state_str = clean_input('''
+                #######
+                #...#.#
+                #.....#
+                #..OO@#
+                #..O..#
+                #.....#
+                #######
+                ''')
+        state = [list(row) for row in state_str]
+
+        commands_str = "".join(clean_input('''
+                <vv<<^^<<^^
+                '''))
+
+        expected = 618
+        actual = solve_part_two(state, commands_str)
+
+        self.assertEqual(expected, actual)
